@@ -68,6 +68,7 @@ func (o *result) SetData(data interface{}) Result {
 
 func (o *result) SetError(code int, err error) Result {
 	o.Code = code
+	o.Data = map[string]interface{}{}
 	o.Text = err.Error()
 	return o
 }
