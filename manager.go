@@ -65,10 +65,10 @@ func (o *management) Add(name string, handler Handler) Management {
 // 调用逻辑.
 func (o *management) Call(i iris.Context, name string) (res Result) {
 	var (
-		code    int
-		err     error
-		handler Handler
-		span    = log.NewSpanFromRequest(i.Request(), i.Request().URL.Path)
+		code int
+		err  error
+		hi   HandlerRunner
+		span = log.NewSpanFromRequest(i.Request(), i.Request().URL.Path)
 	)
 
 	span.Info("[logic=%s] 开始请求", name)
@@ -101,9 +101,10 @@ func (o *management) Call(i iris.Context, name string) (res Result) {
 		span.End()
 
 		// 释放实例.
-		if handler != nil {
+		if hi != nil {
 			if _, ok := o.pools[name]; ok {
-				o.pools[name].Put(handler)
+				hi.Clean()
+				o.pools[name].Put(hi)
 			}
 		}
 	}()
@@ -111,26 +112,26 @@ func (o *management) Call(i iris.Context, name string) (res Result) {
 	// 2. 取出逻辑.
 	if _, ok := o.pools[name]; ok {
 		if v := o.pools[name].Get(); v != nil {
-			handler = v.(Handler)
+			hi = v.(HandlerRunner)
 		}
 	}
 
 	// 3. 构造逻辑.
-	if handler == nil {
+	if hi == nil {
 		if v, ok := o.registry[name]; ok {
-			handler = v
+			hi = v()
 		}
 	}
 
 	// 4. 无效逻辑.
-	if handler == nil {
+	if hi == nil {
 		code = http.StatusNotAcceptable
 		err = ErrUnregisteredHandler
 		return
 	}
 
 	// 5. 处理逻辑.
-	res = handler(span.Context(), i)
+	res = hi.Run(span.Context(), i)
 	return
 }
 

@@ -22,6 +22,18 @@ import (
 
 type (
 	// Handler
-	// 逻辑执行器.
-	Handler func(ctx context.Context, i iris.Context) (res Result)
+	// 执行器回调.
+	Handler func() HandlerRunner
+
+	// HandlerRunner
+	// 执行器接口.
+	HandlerRunner interface {
+		// Clean
+		// 清理数据.
+		Clean()
+
+		// Run
+		// 执行逻辑.
+		Run(ctx context.Context, i iris.Context) (res Result)
+	}
 )
