@@ -32,6 +32,9 @@ type (
 	// Result
 	// 逻辑处理结果.
 	Result interface {
+		GetCode() int
+		GetText() string
+
 		JSON() string
 		Success() bool
 
@@ -56,6 +59,9 @@ func NewResult() Result {
 		Text: defaultResultText,
 	}).init()
 }
+
+func (o *result) GetCode() int    { return o.Code }
+func (o *result) GetText() string { return o.Text }
 
 func (o *result) JSON() string {
 	if body, err := json.Marshal(o); err == nil {
