@@ -24,6 +24,10 @@ const (
 	defaultResultText = "success"
 )
 
+var (
+	emptyData = map[string]interface{}{}
+)
+
 type (
 	// Result
 	// 逻辑处理结果.
@@ -33,6 +37,7 @@ type (
 
 		SetData(data interface{}) Result
 		SetError(code int, err error) Result
+		SetErrorText(code int, text string) Result
 	}
 
 	// 结果结构体.
@@ -65,15 +70,13 @@ func (o *result) Success() bool { return defaultResultCode == o.Code }
 // | Set result fields                                                         |
 // +---------------------------------------------------------------------------+
 
-func (o *result) SetData(data interface{}) Result {
-	o.Data = data
-	return o
-}
+func (o *result) SetData(data interface{}) Result     { o.Data = data; return o }
+func (o *result) SetError(code int, err error) Result { return o.SetErrorText(code, err.Error()) }
 
-func (o *result) SetError(code int, err error) Result {
+func (o *result) SetErrorText(code int, text string) Result {
 	o.Code = code
-	o.Data = map[string]interface{}{}
-	o.Text = err.Error()
+	o.Data = emptyData
+	o.Text = text
 	return o
 }
 
