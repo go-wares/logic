@@ -29,6 +29,8 @@ type (
 	// 逻辑处理结果.
 	Result interface {
 		JSON() string
+		Success() bool
+
 		SetData(data interface{}) Result
 		SetError(code int, err error) Result
 	}
@@ -56,6 +58,8 @@ func (o *result) JSON() string {
 	}
 	return "{}"
 }
+
+func (o *result) Success() bool { return defaultResultCode == o.Code }
 
 // +---------------------------------------------------------------------------+
 // | Set result fields                                                         |
