@@ -34,7 +34,7 @@ type (
 
 		// Ready
 		// 准备处理.
-		Ready(ctx context.Context)
+		Ready(ctx context.Context) HandlerRunner
 
 		// Run
 		// 执行逻辑.

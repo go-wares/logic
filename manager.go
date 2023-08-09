@@ -120,7 +120,6 @@ func (o *management) Call(i iris.Context, name string) (res Result) {
 	if hi == nil {
 		if v, ok := o.registry[name]; ok {
 			hi = v()
-			hi.Ready(span.Context())
 		}
 	}
 
@@ -132,7 +131,7 @@ func (o *management) Call(i iris.Context, name string) (res Result) {
 	}
 
 	// 5. 处理逻辑.
-	res = hi.Run(span.Context(), i)
+	res = hi.Ready(span.Context()).Run(span.Context(), i)
 	return
 }
 
