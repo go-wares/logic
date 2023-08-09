@@ -30,7 +30,11 @@ type (
 	HandlerRunner interface {
 		// Clean
 		// 清理数据.
-		Clean()
+		Clean(ctx context.Context)
+
+		// Ready
+		// 准备处理.
+		Ready(ctx context.Context)
 
 		// Run
 		// 执行逻辑.

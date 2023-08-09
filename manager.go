@@ -96,17 +96,17 @@ func (o *management) Call(i iris.Context, name string) (res Result) {
 			res.SetError(code, err)
 		}
 
-		// 结束请求.
-		span.Info("[logic=%s] 请求结束: %s", name, res.JSON())
-		span.End()
-
 		// 释放实例.
 		if hi != nil {
 			if _, ok := o.pools[name]; ok {
-				hi.Clean()
+				hi.Clean(span.Context())
 				o.pools[name].Put(hi)
 			}
 		}
+
+		// 结束请求.
+		span.Info("[logic=%s] 请求结束: %s", name, res.JSON())
+		span.End()
 	}()
 
 	// 2. 取出逻辑.
@@ -120,6 +120,7 @@ func (o *management) Call(i iris.Context, name string) (res Result) {
 	if hi == nil {
 		if v, ok := o.registry[name]; ok {
 			hi = v()
+			hi.Ready(span.Context())
 		}
 	}
 
