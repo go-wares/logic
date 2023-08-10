@@ -68,10 +68,11 @@ func (o *management) Call(i iris.Context, name string) (res Result) {
 		code int
 		err  error
 		hi   HandlerRunner
-		span = log.NewSpanFromRequest(i.Request(), i.Request().URL.Path)
+		path = i.Request().URL.Path
+		span = log.NewSpanFromRequest(i.Request(), path)
 	)
 
-	span.Info("[logic=%s] 开始请求", name)
+	span.Info("[logic=%s] 开始请求: method=%s, path=%s", name, i.Method(), path)
 
 	// 1. 监听结束.
 	defer func() {
