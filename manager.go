@@ -72,7 +72,7 @@ func (o *management) Call(i iris.Context, name string) (res Result) {
 		span = log.NewSpanFromRequest(i.Request(), path)
 	)
 
-	span.Info("[logic=%s] 开始请求: method=%s, path=%s", name, i.Method(), path)
+	span.Info("[logic=%s] 开始请求: method=%s, path=%s", name, i.Method(), i.Request().RequestURI)
 
 	// 1. 监听结束.
 	defer func() {
